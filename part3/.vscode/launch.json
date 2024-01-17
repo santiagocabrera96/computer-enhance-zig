@@ -1,0 +1,71 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug test",
+            "program": "${workspaceFolder}/zig-out/bin/${fileBasenameNoExtension}_test",
+            "args": [],
+            "cwd": "${workspaceFolder}",
+            "preLaunchTask": "build zig test"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "haversine_main",
+            "program": "${workspaceFolder}/zig-out/bin/${fileBasenameNoExtension}",
+            "args": [
+                "${input:haversine_input_json}_flex.json", 
+                "${input:haversine_input_json}_haveranswer.f64"
+            ],
+            "cwd": "${workspaceFolder}",
+            "preLaunchTask": "build zig"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug",
+            "program": "${workspaceFolder}/zig-out/bin/${fileBasenameNoExtension}",
+            "args": [],
+            "cwd": "${workspaceFolder}",
+            "preLaunchTask": "build zig"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "haversine_generator",
+            "program": "${workspaceFolder}/zig-out/bin/${fileBasenameNoExtension}",
+            "args": ["${input:haversine_generator_method_name}", "${input:args}", "${input:args2}"],
+            "cwd": "${workspaceFolder}",
+            "preLaunchTask": "build zig"
+        }
+    ],
+    "inputs": [
+        {
+            "id": "args",
+            "type": "promptString",
+            "description": "args"
+        },
+        {
+            "id": "args2",
+            "type": "promptString",
+            "description": "args2"
+        },
+        {
+            "id": "haversine_input_json",
+            "type": "pickString",
+            "description": "haversine_input_json",
+            "options": ["data_1", "data_10", "data_100", "data_1000000", "data_10000000"]
+        },
+        {
+            "id": "haversine_generator_method_name",
+            "type": "pickString",
+            "description": "haversine_generator_method_name",
+            "options": ["uniform", "cluster"]
+        }
+    ]
+}
