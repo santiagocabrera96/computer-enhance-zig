@@ -19,7 +19,7 @@ zig run src/listing_0066_haversine_generator.zig -- uniform 12312 10000000
 ## Part 3 
 
 ```bash
-cd part333
+cd part3
 ```
 
 ### Generate json examples
