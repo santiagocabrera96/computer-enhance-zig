@@ -30,7 +30,7 @@
             "request": "launch",
             "name": "Debug",
             "program": "${workspaceFolder}/zig-out/bin/${fileBasenameNoExtension}",
-            "args": [],
+            "args": ["${input:args}"],
             "cwd": "${workspaceFolder}",
             "preLaunchTask": "build zig"
         },

@@ -15,6 +15,7 @@ fn readEntireFile(allocator: std.mem.Allocator, filename: []const u8) ![]u8 {
     const stat = try file.stat();
     const file_size = stat.size;
     const fread_block = profiler.timeBandwidth("readToEndAlloc", file_size);
+
     const result = try file.readToEndAlloc(allocator, file_size);
     profiler.timeBlockEnd(fread_block);
 
@@ -63,6 +64,7 @@ pub fn simpleHaversineMain(allocator: std.mem.Allocator, input_json_filename: []
     std.log.info("Haversine sum: {d:.16}", .{sum});
 
     profiler.endAndPrintProfile();
+
     if (answers_filename) |_| {
         const answers_f64 = try readEntireFile(allocator, answers_filename.?);
         defer allocator.free(answers_f64);

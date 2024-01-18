@@ -37,14 +37,6 @@ fn getTimerFreq() u64 {
     return timer.estimateCPUTimerFreq();
 }
 
-// Note: This function will return a static pointer to a u64. Each different name that calls this will return a diferent pointer.
-fn nameIndex(comptime name: []const u8) *u64 {
-    _ = name;
-    return &struct {
-        var idx: u64 = 0;
-    }.idx;
-}
-
 const Block = struct { index: u64, start_tsc: u64, parent_index: u64, old_tsc_elapsed_inclusive: u64 };
 
 // Calling convention
@@ -53,24 +45,28 @@ const Block = struct { index: u64, start_tsc: u64, parent_index: u64, old_tsc_el
 pub fn timeBandwidth(comptime name: []const u8, byte_count: u64) Block {
     if (!global_profiler.do_profile) return .{ .index = 0, .start_tsc = 0, .parent_index = 0, .old_tsc_elapsed_inclusive = 0 };
 
-    var idx: *u64 = nameIndex(name);
+    var static_index_pointer = &struct {
+        var idx: u64 = 0; // Note: This will give us a different static index per each different comptime name this function gets called with.
+    }.idx;
+    var idx = static_index_pointer.*;
 
-    if (idx.* == 0) {
+    if (idx == 0) {
         std.debug.assert(global_profiler.anchors_used < global_profiler.anchors.len);
         global_profiler.anchors_used += 1;
-        idx.* = global_profiler.anchors_used;
-        global_profiler.anchors[idx.*] = ProfileAnchor{ .label = name };
+        static_index_pointer.* = global_profiler.anchors_used;
+        idx = static_index_pointer.*;
+        global_profiler.anchors[idx] = ProfileAnchor{ .label = name };
     }
-    const anchor = &global_profiler.anchors[idx.*];
+    const anchor = &global_profiler.anchors[idx];
 
     anchor.processed_byte_count += byte_count;
 
     const start_tsc = readTimer();
     const parent_index = global_profiler_parent;
 
-    global_profiler_parent = idx.*;
+    global_profiler_parent = idx;
 
-    return .{ .index = idx.*, .start_tsc = start_tsc, .parent_index = parent_index, .old_tsc_elapsed_inclusive = anchor.tsc_elapsed_inclusive };
+    return .{ .index = idx, .start_tsc = start_tsc, .parent_index = parent_index, .old_tsc_elapsed_inclusive = anchor.tsc_elapsed_inclusive };
 }
 
 // const block = profiler.timeBlockStart(@src().fn_name);
