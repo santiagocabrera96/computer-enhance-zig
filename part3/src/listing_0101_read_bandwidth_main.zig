@@ -14,9 +14,12 @@ fn readEntireFile(allocator: std.mem.Allocator, filename: []const u8) ![]u8 {
     defer file.close();
     const stat = try file.stat();
     const file_size = stat.size;
+
     const fread_block = profiler.timeBandwidth("readToEndAlloc", file_size);
 
     const result = try file.readToEndAlloc(allocator, file_size);
+    const read_bytes = try file.readAll(result);
+    std.debug.assert(read_bytes == file_size);
     profiler.timeBlockEnd(fread_block);
 
     return result;
@@ -101,7 +104,6 @@ pub fn main() !void {
 }
 
 test {
-    // const allocator = std.testing.allocator;
-    // try simpleHaversineMain(allocator, "data_10_flex.json", "data_10_haveranswer.f64");
-    std.debug.print("{d}\n", .{@sizeOf(HaversinePair)});
+    const allocator = std.heap.c_allocator;
+    try simpleHaversineMain(allocator, "data_10000000_flex.json", "data_10000000_haveranswer.f64");
 }

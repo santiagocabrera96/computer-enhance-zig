@@ -6,7 +6,7 @@
         {
             "label": "build zig",
             "type": "shell",
-            "command": "zig build-exe -femit-bin=zig-out/bin/${fileBasenameNoExtension} ${relativeFile}"
+            "command": "zig build-exe -femit-bin=zig-out/bin/${fileBasenameNoExtension} ${relativeFile} -OReleaseSmall -fno-strip"
         },
         {
             "label": "build zig test",

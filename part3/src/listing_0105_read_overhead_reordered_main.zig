@@ -11,8 +11,8 @@ const stdout = std.io.getStdOut().writer();
 const TestFunction = struct { name: []const u8, func: fn (*RepetitionTester, *ReadParameters) anyerror!void };
 
 const test_functions = [_]TestFunction{ //
-    .{ .name = "readViaPReadAll", .func = read_fns.readViaPReadAll },
     .{ .name = "readViaReadAll", .func = read_fns.readViaReadAll },
+    .{ .name = "readViaPReadAll", .func = read_fns.readViaPReadAll },
     .{ .name = "readViaReadToEndAlloc", .func = read_fns.readViaReadToEndAlloc },
 };
 
@@ -37,7 +37,6 @@ fn readOverheadMain(filename: []const u8, allocator: std.mem.Allocator) !void {
         inline for (0..test_functions.len) |func_index| {
             var tester: *RepetitionTester = &testers[func_index];
             const test_function = test_functions[func_index];
-            stdout.print("--- {s} ---\n", .{test_function.name}) catch unreachable;
             repetition_tester.newTestWave(tester, params.dest.len, cpu_timer_freq, seconds_to_try);
 
             try test_function.func(tester, &params);
