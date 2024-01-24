@@ -1,3 +1,7 @@
+### Code based on Casey Mutatori's computer-enhance code and course 
+https://github.com/cmuratori/computer_enhance
+https://computerenhance.com/
+
 # How to use
 
 ## Part 2
