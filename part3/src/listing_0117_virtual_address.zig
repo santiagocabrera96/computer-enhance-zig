@@ -30,6 +30,7 @@ pub fn printAsLine(label: []const u8, address: DecomposedVirtualAddress) void {
 }
 
 pub fn decomposePointer16K(address: u64) DecomposedVirtualAddress {
+    // Note: This only works for aarch64 CPUs
     const result = DecomposedVirtualAddress{
         .unused_bits = @truncate((address >> (64 - 16)) & (1 << 16)),
         .l0_translation_table = @truncate((address >> (64 - 16 - 1)) & std.math.maxInt(u1)),
