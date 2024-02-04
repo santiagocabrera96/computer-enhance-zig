@@ -251,7 +251,7 @@ fn convertJsonNumber(source: []const u8, at_result: *u64) f64 {
     var at = at_result.*;
     var result: f64 = 0.0;
     while (source.len > at) {
-        var char: u8 = source[at] -% '0';
+        const char: u8 = source[at] -% '0';
         if (char < 10) {
             result = 10.0 * result + @as(f64, @floatFromInt(char));
             at += 1;
@@ -308,7 +308,7 @@ fn convertElementToF64(object: *JsonElement, element_name: []const u8) f64 {
 fn freeJson(allocator: Allocator, element: ?*JsonElement) void {
     var element_op: ?*JsonElement = element;
     while (element_op) |e| {
-        var free_element = e;
+        const free_element = e;
         element_op = e.next_sibling;
         freeJson(allocator, e.first_sub_element);
         allocator.destroy(free_element);

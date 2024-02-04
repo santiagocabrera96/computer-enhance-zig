@@ -39,7 +39,7 @@ pub fn simpleHaversineMain(allocator: std.mem.Allocator, input_json_filename: []
         std.log.err("ERROR: Malformed input JSON\n", .{});
         return;
     }
-    var pairs: []HaversinePair = try allocator.alloc(HaversinePair, max_pair_count);
+    const pairs: []HaversinePair = try allocator.alloc(HaversinePair, max_pair_count);
     defer allocator.free(pairs);
 
     const pair_count = parseHaversinePairs(allocator, input_json, max_pair_count, pairs);
