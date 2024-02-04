@@ -109,7 +109,7 @@ test {
     const cpu_timer_freq = timer.estimateCPUTimerFreq();
     const seconds_to_try = 10;
     var allocator = std.testing.allocator;
-    var dest = try allocator.alloc(u8, target_processed_byte_count);
+    const dest = try allocator.alloc(u8, target_processed_byte_count);
     defer allocator.free(dest);
 
     const test_functions = [_]fn (*RepetitionTester, *ReadParameters) anyerror!void{
@@ -127,7 +127,7 @@ test {
         const test_function = test_functions[func_index];
         inline for (allocation_types, 0..) |allocation_type, idx| {
             read_parameters.allocation_type = allocation_type;
-            var tester: *RepetitionTester = &testers[func_index][idx];
+            const tester: *RepetitionTester = &testers[func_index][idx];
             repetition_tester.newTestWave(tester, dest.len, cpu_timer_freq, seconds_to_try);
             try test_function(tester, &read_parameters);
         }

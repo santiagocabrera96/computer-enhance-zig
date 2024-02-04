@@ -22,7 +22,7 @@ fn printBinaryBits(value: u64, first_bit: u32, bit_count: u32) void {
 
 pub fn main() !void {
     for (0..200) |_| {
-        var data = try std.os.mmap(null, 1024 * 1024, std.os.PROT.READ | std.os.PROT.WRITE, std.os.MAP.PRIVATE | std.os.MAP.ANONYMOUS, -1, 0);
+        const data = try std.os.mmap(null, 1024 * 1024, std.os.PROT.READ | std.os.PROT.WRITE, std.os.MAP.PRIVATE | std.os.MAP.ANONYMOUS, -1, 0);
         const address = @intFromPtr(data.ptr);
         printBinaryBits(address, 64 - 16, 16);
         print("|", .{});

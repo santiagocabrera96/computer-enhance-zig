@@ -45,7 +45,7 @@ const Block = struct { index: u64, start_tsc: u64, parent_index: u64, old_tsc_el
 pub fn timeBandwidth(comptime name: []const u8, byte_count: u64) Block {
     if (!global_profiler.do_profile) return .{ .index = 0, .start_tsc = 0, .parent_index = 0, .old_tsc_elapsed_inclusive = 0 };
 
-    var static_index_pointer = &struct {
+    const static_index_pointer = &struct {
         var idx: u64 = 0; // Note: This will give us a different static index per each different comptime name this function gets called with.
     }.idx;
     var idx = static_index_pointer.*;

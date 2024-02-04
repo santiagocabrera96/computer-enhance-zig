@@ -182,7 +182,7 @@ test {
     const target_processed_byte_count = (try file.stat()).size;
     const cpu_timer_freq = timer.estimateCPUTimerFreq();
     const seconds_to_try = 1;
-    var dest = try allocator.alloc(u8, target_processed_byte_count);
+    const dest = try allocator.alloc(u8, target_processed_byte_count);
     defer allocator.free(dest);
 
     try stdout.print("\n", .{});

@@ -48,7 +48,7 @@ test {
     const page_count = 1;
     const total_size = page_size * page_count;
 
-    var data = try std.os.mmap(null, total_size, std.os.PROT.READ | std.os.PROT.WRITE, std.os.MAP.PRIVATE | std.os.MAP.ANONYMOUS, -1, 0);
+    const data = try std.os.mmap(null, total_size, std.os.PROT.READ | std.os.PROT.WRITE, std.os.MAP.PRIVATE | std.os.MAP.ANONYMOUS, -1, 0);
     defer std.os.munmap(data);
 
     print("|", .{});

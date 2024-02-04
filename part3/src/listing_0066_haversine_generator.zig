@@ -103,7 +103,7 @@ fn generateHaversine(method_name_param: []const u8, seed_value: u64, pair_count:
 
     try flex_json.writeAll("{\"pairs\":[\n");
     var sum: f64 = 0;
-    var sum_coef: f64 = 1.0 / @as(f64, @floatFromInt(pair_count));
+    const sum_coef: f64 = 1.0 / @as(f64, @floatFromInt(pair_count));
 
     for (0..pair_count) |pair_index| {
         if (cluster_count_left == 0) {
@@ -144,7 +144,7 @@ pub fn main() !void {
         return;
     }
 
-    var method_name = parseArg(1);
+    const method_name = parseArg(1);
     const seed_value = try std.fmt.parseInt(u64, parseArg(2), 10);
     const pair_count = try std.fmt.parseInt(u64, parseArg(3), 10);
 

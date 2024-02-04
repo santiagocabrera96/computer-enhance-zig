@@ -22,7 +22,7 @@ fn osFaultCounter(page_count: u64) !void {
     for (0..page_count) |touch_count| {
         const touch_size = page_size * touch_count;
 
-        var data_or_err = std.os.mmap(null, total_size, std.os.PROT.READ | std.os.PROT.WRITE, std.os.MAP.PRIVATE | std.os.MAP.ANONYMOUS, -1, 0);
+        const data_or_err = std.os.mmap(null, total_size, std.os.PROT.READ | std.os.PROT.WRITE, std.os.MAP.PRIVATE | std.os.MAP.ANONYMOUS, -1, 0);
         if (data_or_err) |data| {
             defer std.os.munmap(data);
 

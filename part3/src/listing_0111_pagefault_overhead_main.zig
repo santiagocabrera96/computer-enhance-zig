@@ -18,7 +18,7 @@ const test_functions = [_]fn (*RepetitionTester, *ReadParameters) anyerror!void{
 fn readOverheadMain(filename: []const u8, allocator: std.mem.Allocator) !void {
     const cpu_timer_freq = timer.estimateCPUTimerFreq();
     const stat = try std.fs.cwd().statFile(filename);
-    var buff = try allocator.alloc(u8, stat.size);
+    const buff = try allocator.alloc(u8, stat.size);
     defer allocator.free(buff);
 
     const seconds_to_try = 10;
@@ -38,7 +38,7 @@ fn readOverheadMain(filename: []const u8, allocator: std.mem.Allocator) !void {
         inline for (0..test_functions.len) |func_index| {
             const test_function = test_functions[func_index];
             inline for (allocation_types, 0..) |allocation_type, idx| {
-                var tester: *RepetitionTester = &testers[func_index][idx];
+                const tester: *RepetitionTester = &testers[func_index][idx];
                 params.allocation_type = allocation_type;
                 repetition_tester.newTestWave(tester, params.dest.len, cpu_timer_freq, seconds_to_try);
                 try test_function(tester, &params);
