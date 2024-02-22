@@ -59,6 +59,6 @@ pub fn main() !void {
 }
 
 test {
-    const filename = "data_10000000_flex.json";
-    try readOverheadMain(filename, std.testing.allocator);
+    const filename = "data_1_flex.json";
+    try readOverheadMain(filename, std.heap.c_allocator);
 }

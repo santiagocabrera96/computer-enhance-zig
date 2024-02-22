@@ -120,6 +120,60 @@ pub fn writeToAllBytes(tester: *RepetitionTester, params: *ReadParameters) anyer
     }
 }
 
+pub fn writeToAllBytesBackward(tester: *RepetitionTester, params: *ReadParameters) anyerror!void {
+    printName(@src().fn_name, params);
+    while (repetition_tester.isTesting(tester)) {
+        var dest_buffer = params.dest;
+        try handleAllocation(params, &dest_buffer);
+        defer handleDeallocation(params, &dest_buffer);
+
+        repetition_tester.beginTime(tester);
+        for (0..dest_buffer.len) |idx| {
+            dest_buffer[dest_buffer.len - idx - 1] = @truncate(idx);
+        }
+        repetition_tester.endTime(tester);
+        repetition_tester.countBytes(tester, dest_buffer.len);
+    }
+}
+
+var sum: u64 = 0;
+
+pub fn readViaMMap(tester: *RepetitionTester, params: *ReadParameters) anyerror!void {
+    printName(@src().fn_name, params);
+    while (repetition_tester.isTesting(tester)) {
+        const file: std.fs.File = blk: {
+            errdefer repetition_tester.testerError(tester, "openFile failed");
+            break :blk try std.fs.cwd().openFile(params.filename, .{});
+        };
+        defer file.close();
+
+        const size = blk: {
+            errdefer repetition_tester.testerError(tester, "stat failed");
+            break :blk (try file.stat()).size;
+        };
+
+        const page_size = 1024 * 4;
+
+        const pages = (size / page_size);
+
+        errdefer repetition_tester.testerError(tester, "mmap failed");
+
+        repetition_tester.beginTime(tester);
+        const buffer = try std.os.mmap(null, size, std.os.PROT.READ, std.os.MAP.SHARED | std.os.MAP.FILE, file.handle, 0);
+        defer std.os.munmap(buffer);
+
+        // NOTE: Touch all pages
+        sum = 0;
+
+        for (0..pages) |idx| {
+            sum += buffer[page_size * idx];
+        }
+        repetition_tester.endTime(tester);
+
+        repetition_tester.countBytes(tester, size);
+    }
+}
+
 pub fn main() !void {
     const timer = @import("./listing_0108_platform_metrics.zig");
     const filename = "data_10000000_flex.json";
@@ -135,9 +189,11 @@ pub fn main() !void {
 
     const test_functions = [_]fn (*RepetitionTester, *ReadParameters) anyerror!void{
         writeToAllBytes,
+        writeToAllBytesBackward,
         readViaPReadAll,
         readViaReadAll,
         readViaReadToEndAlloc,
+        readViaMMap,
     };
 
     const allocation_types = comptime std.enums.values(AllocationType);
@@ -157,9 +213,10 @@ pub fn main() !void {
 }
 
 test {
-    const timer = @import("./listing_0074_platform_metrics.zig");
-    // const filename = "data_1_flex.json";
+    std.testing.log_level = .info;
+    const timer = @import("./listing_0108_platform_metrics.zig");
     const filename = "data_10000000_flex.json";
+    // const filename = "data_10000000_flex.json";
     const file = try std.fs.cwd().openFile(filename, .{});
     const target_processed_byte_count = (try file.stat()).size;
     const cpu_timer_freq = timer.estimateCPUTimerFreq();
@@ -172,9 +229,11 @@ test {
 
     const test_functions = [_]fn (*RepetitionTester, *ReadParameters) anyerror!void{
         writeToAllBytes,
+        writeToAllBytesBackward,
         readViaPReadAll,
         readViaReadAll,
         readViaReadToEndAlloc,
+        readViaMMap,
     };
 
     const allocation_types = comptime std.enums.values(AllocationType);

@@ -61,7 +61,7 @@ fn printValue(label: []const u8, value: RepetitionValue, cpu_timer_freq: u64) vo
     }
 
     if (E[@intFromEnum(RepetitionValueType.mem_page_faults)] > 0) {
-        stdout.print(" PF: {d:.4} ({d:.4}k/fault)", .{ E[@intFromEnum(RepetitionValueType.mem_page_faults)], 1024 * E[@intFromEnum(RepetitionValueType.byte_count)] / E[@intFromEnum(RepetitionValueType.mem_page_faults)] }) catch unreachable;
+        stdout.print(" PF: {d:.4} ({d:.4}k/fault)", .{ E[@intFromEnum(RepetitionValueType.mem_page_faults)], E[@intFromEnum(RepetitionValueType.byte_count)] / (E[@intFromEnum(RepetitionValueType.mem_page_faults)] * 1024) }) catch unreachable;
     }
 }
 
