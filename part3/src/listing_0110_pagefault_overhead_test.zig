@@ -14,21 +14,21 @@ pub fn describeAllocationType(allocation_type: AllocationType) []const u8 {
     return result;
 }
 
-fn handleAllocation(params: *ReadParameters, buffer: *[]u8) !void {
+pub fn handleAllocation(params: *ReadParameters, buffer: *[]u8) !void {
     switch (params.allocation_type) {
         .malloc => buffer.* = try params.allocator.alloc(u8, params.dest.len),
         .none => {},
     }
 }
 
-fn handleDeallocation(params: *ReadParameters, buffer: *[]u8) void {
+pub fn handleDeallocation(params: *ReadParameters, buffer: *[]u8) void {
     switch (params.allocation_type) {
         .malloc => params.allocator.free(buffer.*),
         .none => {},
     }
 }
 
-fn printName(fn_name: []const u8, params: *ReadParameters) void {
+pub fn printName(fn_name: []const u8, params: *ReadParameters) void {
     stdout.print("\n--- {s}{s}{s} ---\n", .{ describeAllocationType(params.allocation_type), if (params.allocation_type == .none) "" else " + ", fn_name }) catch unreachable;
 }
 
