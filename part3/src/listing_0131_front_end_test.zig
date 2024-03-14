@@ -7,11 +7,35 @@
 const std = @import("std");
 const timer = @import("./listing_0108_platform_metrics.zig");
 const repetition_tester = @import("./listing_0109_pagefault_repetition_tester.zig");
-const read_fns = @import("./listing_0110_pagefault_overhead_test.zig");
+pub const RepetitionTester = repetition_tester.RepetitionTester;
+pub const AllocationType = enum { none, malloc };
+pub const ReadParameters = struct { dest: []u8, filename: []const u8, allocator: std.mem.Allocator, allocation_type: AllocationType };
 const stdout = std.io.getStdOut().writer();
 
-fn printName(fn_name: []const u8, params: *read_fns.ReadParameters) void {
-    stdout.print("\n--- {s}{s}{s} ---\n", .{ read_fns.describeAllocationType(params.allocation_type), if (params.allocation_type == .none) "" else " + ", fn_name }) catch unreachable;
+pub fn describeAllocationType(allocation_type: AllocationType) []const u8 {
+    const result = switch (allocation_type) {
+        .none => "",
+        .malloc => "malloc",
+    };
+    return result;
+}
+
+pub fn handleAllocation(params: *ReadParameters, buffer: *[]u8) !void {
+    switch (params.allocation_type) {
+        .malloc => buffer.* = try params.allocator.alloc(u8, params.dest.len),
+        .none => {},
+    }
+}
+
+pub fn handleDeallocation(params: *ReadParameters, buffer: *[]u8) void {
+    switch (params.allocation_type) {
+        .malloc => params.allocator.free(buffer.*),
+        .none => {},
+    }
+}
+
+fn printName(fn_name: []const u8, params: *ReadParameters) void {
+    stdout.print("\n--- {s}{s}{s} ---\n", .{ describeAllocationType(params.allocation_type), if (params.allocation_type == .none) "" else " + ", fn_name }) catch unreachable;
 }
 
 export fn iterateBuffer(dest_buffer_len: usize, dest_buffer: [*]u8) void {
@@ -20,12 +44,12 @@ export fn iterateBuffer(dest_buffer_len: usize, dest_buffer: [*]u8) void {
     }
 }
 
-fn writeToAllBytes(tester: *repetition_tester.RepetitionTester, params: *read_fns.ReadParameters) anyerror!void {
+pub fn writeToAllBytes(tester: *repetition_tester.RepetitionTester, params: *ReadParameters) anyerror!void {
     printName(@src().fn_name, params);
     while (repetition_tester.isTesting(tester)) {
         var dest_buffer = params.dest;
-        try read_fns.handleAllocation(params, &dest_buffer);
-        defer read_fns.handleDeallocation(params, &dest_buffer);
+        try handleAllocation(params, &dest_buffer);
+        defer handleDeallocation(params, &dest_buffer);
 
         repetition_tester.beginTime(tester);
         iterateBuffer(dest_buffer.len, @ptrCast(dest_buffer.ptr));
@@ -36,12 +60,12 @@ fn writeToAllBytes(tester: *repetition_tester.RepetitionTester, params: *read_fn
 
 extern fn MOVAllBytesAsm(dest_buffer_len: usize, dest_buffer: [*]u8) void;
 
-fn writeToAllBytesAsm(tester: *repetition_tester.RepetitionTester, params: *read_fns.ReadParameters) anyerror!void {
+pub fn writeToAllBytesAsm(tester: *repetition_tester.RepetitionTester, params: *ReadParameters) anyerror!void {
     printName(@src().fn_name, params);
     while (repetition_tester.isTesting(tester)) {
         var dest_buffer = params.dest;
-        try read_fns.handleAllocation(params, &dest_buffer);
-        defer read_fns.handleDeallocation(params, &dest_buffer);
+        try handleAllocation(params, &dest_buffer);
+        defer handleDeallocation(params, &dest_buffer);
 
         repetition_tester.beginTime(tester);
         MOVAllBytesAsm(dest_buffer.len, @ptrCast(dest_buffer.ptr));
@@ -52,12 +76,12 @@ fn writeToAllBytesAsm(tester: *repetition_tester.RepetitionTester, params: *read
 
 extern fn NOPAllBytesAsm(dest_buffer_len: usize, dest_buffer: [*]u8) void;
 
-fn NOPToAllBytesAsm(tester: *repetition_tester.RepetitionTester, params: *read_fns.ReadParameters) anyerror!void {
+pub fn NOPToAllBytesAsm(tester: *repetition_tester.RepetitionTester, params: *ReadParameters) anyerror!void {
     printName(@src().fn_name, params);
     while (repetition_tester.isTesting(tester)) {
         var dest_buffer = params.dest;
-        try read_fns.handleAllocation(params, &dest_buffer);
-        defer read_fns.handleDeallocation(params, &dest_buffer);
+        try handleAllocation(params, &dest_buffer);
+        defer handleDeallocation(params, &dest_buffer);
 
         repetition_tester.beginTime(tester);
         NOPAllBytesAsm(dest_buffer.len, @ptrCast(dest_buffer.ptr));
@@ -68,12 +92,12 @@ fn NOPToAllBytesAsm(tester: *repetition_tester.RepetitionTester, params: *read_f
 
 extern fn CMPAllBytesAsm(dest_buffer_len: usize, dest_buffer: [*]u8) void;
 
-fn CMPToAllBytesAsm(tester: *repetition_tester.RepetitionTester, params: *read_fns.ReadParameters) anyerror!void {
+pub fn CMPToAllBytesAsm(tester: *repetition_tester.RepetitionTester, params: *ReadParameters) anyerror!void {
     printName(@src().fn_name, params);
     while (repetition_tester.isTesting(tester)) {
         var dest_buffer = params.dest;
-        try read_fns.handleAllocation(params, &dest_buffer);
-        defer read_fns.handleDeallocation(params, &dest_buffer);
+        try handleAllocation(params, &dest_buffer);
+        defer handleDeallocation(params, &dest_buffer);
 
         repetition_tester.beginTime(tester);
         CMPAllBytesAsm(dest_buffer.len, @ptrCast(dest_buffer.ptr));
@@ -84,12 +108,12 @@ fn CMPToAllBytesAsm(tester: *repetition_tester.RepetitionTester, params: *read_f
 
 extern fn DECAllBytesAsm(dest_buffer_len: usize, dest_buffer: [*]u8) void;
 
-fn DECToAllBytesAsm(tester: *repetition_tester.RepetitionTester, params: *read_fns.ReadParameters) anyerror!void {
+pub fn DECToAllBytesAsm(tester: *repetition_tester.RepetitionTester, params: *ReadParameters) anyerror!void {
     printName(@src().fn_name, params);
     while (repetition_tester.isTesting(tester)) {
         var dest_buffer = params.dest;
-        try read_fns.handleAllocation(params, &dest_buffer);
-        defer read_fns.handleDeallocation(params, &dest_buffer);
+        try handleAllocation(params, &dest_buffer);
+        defer handleDeallocation(params, &dest_buffer);
 
         repetition_tester.beginTime(tester);
         DECAllBytesAsm(dest_buffer.len, @ptrCast(dest_buffer.ptr));
@@ -110,13 +134,13 @@ pub fn main() !void {
 
     try stdout.print("\n", .{});
 
-    const test_functions = [_]fn (*repetition_tester.RepetitionTester, *read_fns.ReadParameters) anyerror!void{ //
+    const test_functions = [_]fn (*repetition_tester.RepetitionTester, *ReadParameters) anyerror!void{ //
         writeToAllBytes, writeToAllBytesAsm, NOPToAllBytesAsm, CMPToAllBytesAsm, DECToAllBytesAsm,
     };
 
     var testers = [_]repetition_tester.RepetitionTester{repetition_tester.RepetitionTester{}} ** test_functions.len;
 
-    var read_parameters = read_fns.ReadParameters{ .dest = dest, .filename = filename, .allocator = allocator, .allocation_type = .none };
+    var read_parameters = ReadParameters{ .dest = dest, .filename = filename, .allocator = allocator, .allocation_type = .none };
     inline for (0..test_functions.len) |func_index| {
         const test_function = test_functions[func_index];
 
