@@ -1,8 +1,8 @@
 // How to run:
-// as src/listing_0144_read_unroll.asm -o zig-out/bin/listing_0144_read_unroll.o
-// libtool zig-out/bin/listing_0144_read_unroll.o -o zig-out/bin/liblisting_0144_read_unroll.a
-// zig build-exe -llisting_0144_read_unroll -L./zig-out/bin -femit-bin=zig-out/bin/listing_0145_read_unroll_main src/listing_0145_read_unroll_main.zig -OReleaseSmall -fno-strip
-// ./zig-out/bin/listing_0145_read_unroll_main
+// as src/listing_0146_byte_read.asm -o zig-out/bin/listing_0146_byte_read.o
+// libtool zig-out/bin/listing_0146_byte_read.o -o zig-out/bin/liblisting_0146_byte_read.a
+// zig build-exe -llisting_0146_byte_read -L./zig-out/bin -femit-bin=zig-out/bin/listing_0147_byte_read_main src/listing_0147_byte_read_main.zig -OReleaseSmall -fno-strip
+// ./zig-out/bin/listing_0147_byte_read_main
 
 const std = @import("std");
 
@@ -17,40 +17,16 @@ fn printName(fn_name: []const u8) void {
 }
 
 const test_names = [_][]const u8{ //
-    "readX1",
-    "readX2",
-    "readX3",
-    "readX4",
-    "readX5",
-    "storeX1",
-    "storeX2",
-    "storeX3",
-    "storeX4",
-    "storeX5",
+    "read_4X2",
+    "read_8X2",
 };
 
-extern fn readX1(*u64, c_int) void;
-extern fn readX2(*u64, c_int) void;
-extern fn readX3(*u64, c_int) void;
-extern fn readX4(*u64, c_int) void;
-extern fn readX5(*u64, c_int) void;
-extern fn storeX1(*u64, c_int) void;
-extern fn storeX2(*u64, c_int) void;
-extern fn storeX3(*u64, c_int) void;
-extern fn storeX4(*u64, c_int) void;
-extern fn storeX5(*u64, c_int) void;
+extern fn read_4X2(*u64, c_int) void;
+extern fn read_8X2(*u64, c_int) void;
 
 const test_functions = [_]fn (*u64, c_int) callconv(.C) void{ //
-    readX1,
-    readX2,
-    readX3,
-    readX4,
-    readX5,
-    storeX1,
-    storeX2,
-    storeX3,
-    storeX4,
-    storeX5,
+    read_4X2,
+    read_8X2,
 };
 
 fn readOverheadMain(allocator: std.mem.Allocator) !void {
