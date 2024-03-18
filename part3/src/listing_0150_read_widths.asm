@@ -8,8 +8,8 @@
 .p2align 8
 _read_4x3:
     ldr w2, [x0]
-    ldr w2, [x0, 4]
-    ldr w2, [x0, 8]
+    ldr w2, [x0]
+    ldr w2, [x0]
     subs x1, x1, 12
     b.gt _read_4x3
     ret
@@ -17,8 +17,8 @@ _read_4x3:
 .p2align 8
 _read_8x3:
     ldr x2, [x0]
-    ldr x2, [x0, 8]
-    ldr x2, [x0, 16]
+    ldr x2, [x0]
+    ldr x2, [x0]
     subs x1, x1, 24
     b.gt _read_8x3
     ret

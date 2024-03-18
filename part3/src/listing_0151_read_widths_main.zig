@@ -45,21 +45,7 @@ fn readOverheadMain(allocator: std.mem.Allocator) !void {
     var testers = [_]RepetitionTester{RepetitionTester{}} ** test_functions.len;
 
     var buff = try allocator.alloc(u64, 16);
-    buff[0] = 0x0123456789abcdef;
-    buff[1] = 0xfedcba9876543210;
-    buff[2] = 0x1111111111111110;
-    buff[3] = 0x2222222222222220;
-    buff[4] = 0x3333333333333330;
-    buff[5] = 0x4444444444444440;
-    buff[6] = 0x0123456789abcdef;
-    buff[7] = 0xfedcba9876543210;
-    buff[8] = 0x1111111111111110;
-    buff[9] = 0x2222222222222220;
-    buff[10] = 0x3333333333333330;
-    buff[11] = 0x4444444444444440;
     defer allocator.free(buff);
-
-    read_32x3(&buff[0], iterations);
 
     while (true) {
         inline for (0..test_functions.len) |func_index| {
