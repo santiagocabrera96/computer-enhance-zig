@@ -5,14 +5,14 @@ const stdout = std.io.getStdOut().writer();
 
 const TestMode = enum { uninitialized, testing, completed, test_error };
 
-const RepetitionValueType = enum { test_count, cpu_timer, mem_page_faults, byte_count };
+pub const RepetitionValueType = enum { test_count, cpu_timer, mem_page_faults, byte_count };
 const repetition_value_type_count = @typeInfo(RepetitionValueType).Enum.fields.len;
 
 const RepetitionValue = struct {
     E: [repetition_value_type_count]u64 = [_]u64{0} ** repetition_value_type_count,
 };
 
-const RepetitionTestResults = struct {
+pub const RepetitionTestResults = struct {
     total: RepetitionValue = RepetitionValue{},
     min: RepetitionValue = RepetitionValue{},
     max: RepetitionValue = RepetitionValue{},
@@ -34,7 +34,7 @@ pub const RepetitionTester = struct {
     results: RepetitionTestResults = RepetitionTestResults{},
 };
 
-fn secondsFromCPUTime(cpu_time: f64, cpu_timer_freq: u64) f64 {
+pub fn secondsFromCPUTime(cpu_time: f64, cpu_timer_freq: u64) f64 {
     const result = if (cpu_timer_freq > 0) (cpu_time / @as(f64, @floatFromInt(cpu_timer_freq))) else 0;
     return result;
 }
